@@ -24,7 +24,7 @@ def main():
         if choice == '1':
             add_recipe()
         elif choice == '2':
-            search_recipe()
+            recipes_by_ingredients()
         elif choice == '3':
             view_all_recipe()
         elif choice == '4':
