@@ -21,6 +21,7 @@ def recipes_by_ingredients():
                 found = True 
             if not found:
                 print(f" No recipes found with '{ingredients}' ")
+                break 
 #Sayed Hussain
 
 #Waseem
