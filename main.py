@@ -23,10 +23,12 @@ def main():
         elif choice == 5:
             rate_recipe()
         elif choice == 6:
+            view_recipes_sorted_by_rating()
+        elif choice == 7:
             print("Thank you for using Ratatouille. Goodbye!")
             break
         else:
-            print("Invalid choice. Please enter a number between 1 and 5.")
+            print("Invalid choice. Please enter a number between 1 and 7.")
 
 def display_menu():
     """Display the main menu options."""
@@ -34,9 +36,11 @@ def display_menu():
     print("1. Add a new recipe to the collection")
     print("2. Search for recipes by ingredient")
     print("3. View all recipes")
-    print("4. View a random recipe suggestion ")
-    print("5. Exit")
-    return int(input("Enter your choice (1-5): "))
+    print("4. View a random recipe suggestion")
+    print("5. Rate a recipe")
+    print("6. View recipes sorted by rating")
+    print("7. Exit")
+    return int(input("Enter your choice (1-7): "))
 #Zahra
 
 recipes = [{'name':'cookies','prep_time':'25'},{'name':'cake','prep_time':'55'}]
@@ -83,7 +87,7 @@ def add_recipe():
     except FileNotFoundError:
         with open('recipes.csv', 'w', newline='') as file:
             writer = csv.writer(file)
-            writer.writerow(['recipe_id', 'name', 'ingredients','prep_time', 'cooking_instructions', 'difficulty', 'category'])
+            writer.writerow(['recipe_id', 'name', 'ingredients','prep_time', 'cooking_instructions', 'difficulty', 'category','rating'])
             print('\n Your Recipes File is Now Created! Enjoy Adding Your Tasty Recipes :)')
 
     print('\nWell, it is time to add your lovely recipe now!') #tell the user that they have loaded their file with a nice welcoming message
@@ -95,7 +99,7 @@ def add_recipe():
     
     while valid_prep:
         try:
-            prep_time = int(input('\nand how many mins would this dish take to get ready ⏲️? \n numbers only plzzz...'))
+            prep_time = int(input('\nand how many mins would this dish take to get ready ⏲️? \n numbers only please...'))
             if type(prep_time) is int:
                 valid_prep = False # ending the loop
         except ValueError:
@@ -134,7 +138,7 @@ def add_recipe():
             print('\nThat option does not exist! Please Try Again')
 
     #finally we will create the recipe
-
+    rating = ''
     new_recipe = {
         'recipe_id': recipe_id,
         'name': name,
@@ -142,11 +146,12 @@ def add_recipe():
         'prep_time': prep_time,
         'cooking_instructions': cooking_instructions,
         'difficulty' : difficulty,
-        'category': category
+        'category': category,
+        'rating': rating
     }
     try:
         with open('recipes.csv', 'a', newline='') as file:
-            fn = ['recipe_id', 'name', 'ingredients','prep_time', 'cooking_instructions', 'difficulty', 'category']
+            fn = ['recipe_id', 'name', 'ingredients','prep_time', 'cooking_instructions', 'difficulty', 'category', 'rating']
             writer = csv.DictWriter(file, fieldnames=fn)
             writer.writerow(new_recipe)
             print('\nYUM! THIS RECIPE SMELLS GOOD! 🍲\n*RECIPE ADDED SUCCESFULY*')   
@@ -168,25 +173,85 @@ def view_random_recipe():
                 i = int(input("Please Enter Correct Values (1 or 0): "))
 
 def rate_recipe():
-    recipes = ()
-    with open('recipes.csv', "r") as file:
-        recipes = list(csv.DictReader(file))
+    """Rate an existing recipe and update the CSV file."""
+    try:
+        # Read existing recipes from the same file that add_recipe uses
+        with open('recipes.csv', "r") as file:
+            recipes = list(csv.DictReader(file))
+            
         if not recipes:
             print("No recipes to rate")
             return
-        recipe_name = input("Enter the recipe name to rate: ").lower()
+            
+        # Display available recipes for user to choose from
+        print("\nAvailable recipes to rate:")
+        for i, recipe in enumerate(recipes, 1):
+            current_rating = recipe['rating'] if recipe['rating'] else 'Not rated'
+            print(f"{i}. {recipe['name']} (Current rating: {current_rating})")
+        
+        recipe_name = input("\nEnter the recipe name to rate: ").lower()
         found = False
-        for recipe in recipes:
-            if recipe['Name'].lower() == recipe_name:
-                rating = input("Enter your rating (1-5): ")
-                if rating <= 1 and rating >=5:
-                    print(f" Rating updated for recipe to {rating}")
-                else:
-                    print("Invalid rating")
+        
+        for i, recipe in enumerate(recipes):
+            if recipe['name'].lower() == recipe_name:
                 found = True
-                break
-            if not found:
-                print(f"Recipe {'recipe_name'} not found")
+                while True:
+                    try:
+                        rating = input("Enter your rating (1-5): ")
+                        if rating in ["1", "2", "3", "4", "5"]:
+                            recipes[i]["rating"] = rating
+                            
+                            # Write the updated recipes back to the CSV file
+                            with open('recipes.csv', 'w', newline='') as file:
+                                fieldnames = ['recipe_id', 'name', 'ingredients', 'prep_time', 'cooking_instructions', 'difficulty', 'category', 'rating']
+                                writer = csv.DictWriter(file, fieldnames=fieldnames)
+                                writer.writeheader()
+                                writer.writerows(recipes)
+                            
+                            print(f"Rating for '{recipe['name']}' has been updated to {rating} stars!")
+                            return
+                        else:
+                            print("Invalid rating. Please enter a number between 1 and 5.")
+                    except ValueError:
+                        print("Invalid input. Please enter a number between 1 and 5.")
+        
+        if not found:
+            print(f"Recipe '{recipe_name}' not found. Please check the spelling and try again.")
+            
+    except FileNotFoundError:
+        print("No recipes file found. Please add some recipes first!")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+def view_recipes_sorted_by_rating():
+    """View all recipes sorted by their rating."""
+    try:
+        with open('recipes.csv', "r") as file:
+            recipes = list(csv.DictReader(file))
+            
+        if not recipes:
+            print("No recipes found")
+            return
+            
+        # Convert ratings to integers for sorting, treating empty/invalid ratings as 0
+        for recipe in recipes:
+            try:
+                recipe["rating"] = int(recipe["rating"]) if recipe["rating"] else 0
+            except ValueError:
+                recipe["rating"] = 0
+        
+        # Sort recipes by rating in descending order
+        recipes.sort(key=lambda x: x["rating"], reverse=True)
+        
+        print("\n=== Recipes Sorted by Rating ===")
+        for recipe in recipes:
+            rating_display = f"{recipe['rating']} stars" if recipe['rating'] > 0 else "Not rated"
+            print(f"{recipe['name']} - {rating_display}")
+            
+    except FileNotFoundError:
+        print("No recipes file found. Please add some recipes first!")
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 if __name__ == "__main__":
     main()
