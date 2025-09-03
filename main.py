@@ -1,12 +1,16 @@
 import csv
 import random as rd
 import uuid
-
+import datetime
 
 # Hussain Darwish
 
 def main():
-    """Main application function."""
+    """Mai    except FileNotFoundError:
+        with open('recipes.csv', 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(['recipe_id', 'name', 'ingredients','prep_time', 'cooking_instructions', 'difficulty', 'category','rating', 'last_cooked'])
+            print('\n Your Recipes File is Now Created! Enjoy Adding Your Tasty Recipes :)')lication function."""
     print("Welcome to Ratatouille!")
     print("This app helps you to create a digital recipe book that allows users to store, retrieve, and manage your favorite recipes in a .csv file.")
 
@@ -25,10 +29,14 @@ def main():
         elif choice == 6:
             view_recipes_sorted_by_rating()
         elif choice == 7:
+            cook()
+        elif choice == 8:
+            nostalgic_recipes()
+        elif choice == 9:
             print("Thank you for using Ratatouille. Goodbye!")
             break
         else:
-            print("Invalid choice. Please enter a number between 1 and 7.")
+            print("Invalid choice. Please enter a number between 1 and 9.")
 
 def display_menu():
     """Display the main menu options."""
@@ -39,8 +47,10 @@ def display_menu():
     print("4. View a random recipe suggestion")
     print("5. Rate a recipe")
     print("6. View recipes sorted by rating")
-    print("7. Exit")
-    return int(input("Enter your choice (1-7): "))
+    print("7. Cook a recipe")
+    print("8. View recipes that you didn't cook in a while")
+    print("9. Exit")
+    return int(input("Enter your choice (1-9): "))
 #Zahra
 
 def view_all_recipes():
@@ -104,7 +114,7 @@ def add_recipe():
     except FileNotFoundError:
         with open('recipes.csv', 'w', newline='') as file:
             writer = csv.writer(file)
-            writer.writerow(['recipe_id', 'name', 'ingredients','prep_time', 'cooking_instructions', 'difficulty', 'category','rating'])
+            writer.writerow(['recipe_id', 'name', 'ingredients','prep_time', 'cooking_instructions', 'difficulty', 'category','rating','last_cooked'])
             print('\n Your Recipes File is Now Created! Enjoy Adding Your Tasty Recipes :)')
 
     print('\nWell, it is time to add your lovely recipe now!') #tell the user that they have loaded their file with a nice welcoming message
@@ -155,7 +165,8 @@ def add_recipe():
             print('\nThat option does not exist! Please Try Again')
 
     #finally we will create the recipe
-    rating = ''
+    rating = None
+    last_cooked = None
     new_recipe = {
         'recipe_id': recipe_id,
         'name': name,
@@ -164,17 +175,102 @@ def add_recipe():
         'cooking_instructions': cooking_instructions,
         'difficulty' : difficulty,
         'category': category,
-        'rating': rating
+        'rating': rating,
+        'last_cooked': last_cooked
     }
     try:
         with open('recipes.csv', 'a', newline='') as file:
-            fn = ['recipe_id', 'name', 'ingredients','prep_time', 'cooking_instructions', 'difficulty', 'category', 'rating']
+            fn = ['recipe_id', 'name', 'ingredients','prep_time', 'cooking_instructions', 'difficulty', 'category', 'rating', 'last_cooked']
             writer = csv.DictWriter(file, fieldnames=fn)
             writer.writerow(new_recipe)
             print('\nYUM! THIS RECIPE SMELLS GOOD! 🍲\n*RECIPE ADDED SUCCESFULY*')   
     except Exception:
         print('\nUh.. Oh.. Someone Spilled The Pot!\n*ERROR ADDING YOUR RECIPE')
-#Waseem
+
+def cook():
+    """Cooks a recipe and adds the current date to last cooked"""
+    try:
+        # Read existing recipes
+        with open('recipes.csv', 'r') as file:
+            reader = csv.DictReader(file)
+            recipes = list(reader)
+            
+        if not recipes:
+            print("No recipes found. Please add some recipes first!")
+            return
+            
+        # Display available recipes
+        print("\nAvailable recipes to cook:")
+        for i, recipe in enumerate(recipes, 1):
+            last_cooked = recipe.get('last_cooked', 'Never')
+            print(f"{i}. {recipe['name']} (Last cooked: {last_cooked})")
+        
+        cook_choice = input('\nWhich recipe would you like to cook? (Enter the recipe name): ').strip()
+        
+        # Find the recipe
+        recipe_found = False
+        current_date = datetime.date.today().strftime("%Y-%m-%d")
+        
+        for recipe in recipes:
+            if recipe['name'].lower() == cook_choice.lower():
+                recipe_found = True
+                recipe['last_cooked'] = current_date
+                
+                # Display the recipe details
+                print(f"\n🍳 Cooking: {recipe['name']} 🍳")
+                print(f"Ingredients: {recipe['ingredients']}")
+                print(f"Instructions: {recipe['cooking_instructions']}")
+                print(f"Prep time: {recipe['prep_time']} minutes")
+                print(f"Difficulty: {recipe['difficulty']}")
+                print(f"Category: {recipe['category']}")
+                break
+        
+        if not recipe_found:
+            print('Recipe not found. Please check the name and try again.')
+            return
+            
+        # Write updated recipes back to CSV
+        with open('recipes.csv', 'w', newline='') as file:
+            # Ensure 'last_cooked' is in the fieldnames
+            fieldnames = ['recipe_id', 'name', 'ingredients', 'prep_time', 'cooking_instructions', 'difficulty', 'category', 'rating', 'last_cooked']
+            writer = csv.DictWriter(file, fieldnames=fieldnames)
+            writer.writeheader()
+            
+            for recipe in recipes:
+                # Ensure all recipes have the last_cooked field
+                if 'last_cooked' not in recipe:
+                    recipe['last_cooked'] = ''
+                writer.writerow(recipe)
+                
+        print(f"\n✅ Marked '{cook_choice}' as cooked on {current_date}!")
+        print("Enjoy your meal! 🍽️")
+        
+    except FileNotFoundError:
+        print("No recipes file found. Please add some recipes first!")
+    except Exception as e:
+        print(f'An error occurred while updating the recipe: {e}')
+
+def nostalgic_recipes():
+    """View recipes that were not cooked in the last 3 days"""
+    try:
+        current_date = datetime.date.today()
+        with open('recipes.csv', 'r') as file:
+            reader = csv.DictReader(file)
+            not_cooked_recently = []
+            for row in reader:
+                if row['last_cooked']:
+                    last_cooked_date = datetime.datetime.strptime(row['last_cooked'], "%Y-%m-%d").date()
+                    days_since_cooked = (current_date - last_cooked_date).days
+                    if days_since_cooked > 3:
+                        not_cooked_recently.append(row)
+            if not_cooked_recently:
+                print("\nRecipes not cooked in the last 3 days:")
+                for recipe in not_cooked_recently:
+                    print(f"- {recipe['name']} last cooked on {recipe['last_cooked']}")
+            else:
+                print('Looks like you have been doing a lot of cooking lately! NOTHING TO SEE HERE!')
+    except Exception:
+        print('Uh Oh.. WE DEFINITELY DID NOT FORGET WHERE WE HAVE PUT THAT RECIPE!\n*ERROR FETCHING NOSTALGIC RECIPES')
 
 def view_random_recipe():
     """Generate A Random Recipe from Available Recipes"""
