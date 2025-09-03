@@ -90,12 +90,12 @@ def recipes_by_ingredients():
         with open('recipes.csv', 'r') as file:
             reader = csv.DictReader(file)
             for row in reader:
-                if ingredients in row['Ingredients'].lower():
-                    print(f"\n {row['Name']}")
-                    print(f"Ingredients: {row['Ingredients']}")
-                    print(f"Instructions: {row['Instructions']}\n")
-                    print(f"Preperation Time: {row['PrepTime']}")
-                    found = True 
+                if ingredients in row['ingredients'].lower():
+                    print(f"\n {row['name']}")
+                    print(f"Ingredients: {row['ingredients']}")
+                    print(f"Instructions: {row['cooking_instructions']}\n")
+                    print(f"Preperation Time: {row['prep_time']}")
+                    found = True
                 if not found:
                     print(f" No recipes found with '{ingredients}' ")
                     break 
