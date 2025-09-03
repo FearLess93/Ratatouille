@@ -6,11 +6,7 @@ import datetime
 # Hussain Darwish
 
 def main():
-    """Mai    except FileNotFoundError:
-        with open('recipes.csv', 'w', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(['recipe_id', 'name', 'ingredients','prep_time', 'cooking_instructions', 'difficulty', 'category','rating', 'last_cooked'])
-            print('\n Your Recipes File is Now Created! Enjoy Adding Your Tasty Recipes :)')lication function."""
+    """Main application function."""
     print("Welcome to Ratatouille!")
     print("This app helps you to create a digital recipe book that allows users to store, retrieve, and manage your favorite recipes in a .csv file.")
 
@@ -33,10 +29,12 @@ def main():
         elif choice == 8:
             nostalgic_recipes()
         elif choice == 9:
+            scaling_ingredients()
+        elif choice == 10:
             print("Thank you for using Ratatouille. Goodbye!")
             break
         else:
-            print("Invalid choice. Please enter a number between 1 and 9.")
+            print("Invalid choice. Please enter a number between 1 and 10.")
 
 def display_menu():
     """Display the main menu options."""
@@ -49,8 +47,9 @@ def display_menu():
     print("6. View recipes sorted by rating")
     print("7. Cook a recipe")
     print("8. View recipes that you didn't cook in a while")
-    print("9. Exit")
-    return int(input("Enter your choice (1-9): "))
+    print("9. Scale ingredients for a recipe")
+    print("10. Exit")
+    return int(input("Enter your choice (1-10): "))
 #Zahra
 
 def view_all_recipes():
@@ -395,6 +394,40 @@ def view_recipes_sorted_by_rating():
         print("No recipes file found. Please add some recipes first!")
     except Exception as e:
         print(f"An error occurred: {e}")
+def scaling_ingredients():
+    """" Scaling the Quantity of ingredients based on Number of Servings"""
+     # Read existing recipes
+    with open('recipes.csv', 'r') as file:
+        reader = csv.DictReader(file)
+        recipes = list(reader)
+        if not recipes:
+            print("No recipes found. Please add some recipes first!")
+            return
+        # Display available recipes
+        print("\nAvailable recipes to cook:")
+    for i, recipe in enumerate(recipes, 1):
+            print(f"{i}. {recipe['name']} ")
+    choice = input('\nWhich recipe would you like to cook? (Enter the recipe name): ').strip()
+        # Find the recipe
+    recipe_found = False
+    for recipe in recipes:
+        if recipe['name'].lower() == choice.lower():
+            recipe_found = True
+            # Display the recipe details
+            print(f"\n:fried_egg:Recipe: {recipe['name']} :fried_egg:")
+            print(f"Ingredients: {recipe['ingredients']}")
+            print(f"Instructions: {recipe['cooking_instructions']}")
+            print(f"Prep time: {recipe['prep_time']} minutes")
+            print(f"Difficulty: {recipe['difficulty']}")
+            print(f"Category: {recipe['category']}")
+            break
+        if not recipe_found:
+            print('Recipe not found. Please check the name and try again.')
+            return
+    servings = int(input("Enter number of servings: "))
+    print("===============The Quantity of ingredients you require for you================")
+    print(f"For {servings} of {recipe['name']} \n you will need: {servings} x {recipe['ingredients']}")
+    print("===================================================================")
 
 if __name__ == "__main__":
     main()
