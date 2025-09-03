@@ -187,26 +187,32 @@ def view_random_recipe():
             return
             
         i = 1
-        while i == 1:
+        while i != 0:
             try:
-                index = rd.randint(0, len(recipes) - 1)
-                recipe = recipes[index]
-                
-                print(f"\n=========== Here is a Random Recipe you can try ===============\n")
-                print(f"Recipe Name: {recipe['name']}")
-                print(f"Ingredients: {recipe['ingredients']}")
-                print(f"Preparation Time: {recipe['prep_time']} minutes")
-                print(f"Difficulty: {recipe['difficulty']}")
-                print(f"Category: {recipe['category']}")
-                print(f"Instructions: {recipe['cooking_instructions']}")
-                rating = recipe['rating'] if recipe['rating'] else 'Not rated'
-                print(f"Rating: {rating}")
-                print("=" * 65)
-                
                 i = int(input("Enter '1' to generate another random recipe or '0' to exit: "))
+
+                if i == 1:
+                    index = rd.randint(0, len(recipes) - 1)
+                    recipe = recipes[index]
+
+                    print(f"\n=========== Here is a Random Recipe you can try ===============\n")
+                    print(f"Recipe Name: {recipe['name']}")
+                    print(f"Ingredients: {recipe['ingredients']}")
+                    print(f"Preparation Time: {recipe['prep_time']} minutes")
+                    print(f"Difficulty: {recipe['difficulty']}")
+                    print(f"Category: {recipe['category']}")
+                    print(f"Instructions: {recipe['cooking_instructions']}")
+                    rating = recipe['rating'] if recipe['rating'] else 'Not rated'
+                    print(f"Rating: {rating}")
+                    print("=" * 65)
+                    
+                elif i == 0:
+                    print("Thank you for using the recipe app!")
+                    break
+                else:
+                    raise ValueError
             except ValueError:
                 print("Please enter a valid number (1 or 0).")
-                i = int(input("Enter '1' to generate another random recipe or '0' to exit: "))
                 
     except FileNotFoundError:
         print("No recipes file found. Please add some recipes first!")
