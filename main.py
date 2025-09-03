@@ -43,15 +43,32 @@ def display_menu():
     return int(input("Enter your choice (1-7): "))
 #Zahra
 
-recipes = [{'name':'cookies','prep_time':'25'},{'name':'cake','prep_time':'55'}]
-
-def view_all_recipes(i):
-    '''View all recipies in the database.'''
-    if len(recipes) > 0:
-        for i in recipes:
-            print(f"Recipe Name: {i['name']} \nPreperation Time: {i['prep_time']} minutes \n\n")
-    else:
-        print('No Recipes Found')
+def view_all_recipes():
+    """View all recipes in the database from the CSV file."""
+    try:
+        with open('recipes.csv', 'r') as file:
+            recipes = list(csv.DictReader(file))
+            
+        if not recipes:
+            print("No recipes found in the database.")
+            return
+            
+        print("\n=== All Recipes ===")
+        for i, recipe in enumerate(recipes, 1):
+            print(f"\n{i}. Recipe Name: {recipe['name']}")
+            print(f"   Ingredients: {recipe['ingredients']}")
+            print(f"   Preparation Time: {recipe['prep_time']} minutes")
+            print(f"   Difficulty: {recipe['difficulty']}")
+            print(f"   Category: {recipe['category']}")
+            print(f"   Instructions: {recipe['cooking_instructions']}")
+            rating = recipe['rating'] if recipe['rating'] else 'Not rated'
+            print(f"   Rating: {rating}")
+            print("-" * 50)
+            
+    except FileNotFoundError:
+        print("No recipes file found. Please add some recipes first!")
+    except Exception as e:
+        print(f"An error occurred while reading recipes: {e}")
 
 
 #Maryam
@@ -92,14 +109,14 @@ def add_recipe():
 
     print('\nWell, it is time to add your lovely recipe now!') #tell the user that they have loaded their file with a nice welcoming message
     recipe_id = str(uuid.uuid4()) # we here are creating a unique id for each recipe. this can help us in the future.
-    name = input('What is the name of your recipe 👀? ')
+    name = input('What is the name of your recipe 👀?')
 
-    ingredients = input('\nWhat ingredients would we need for this dish? 🥕 \n(separate them by commas) ')
+    ingredients = input('\nWhat ingredients would we need for this dish? 🥕 \n(separate them by commas)')
     valid_prep = True # creating the loop turn on condition
     
     while valid_prep:
         try:
-            prep_time = int(input('\nand how many mins would this dish take to get ready ⏲️? \n numbers only please... '))
+            prep_time = int(input('\nand how many mins would this dish take to get ready ⏲️? \n numbers only please...'))
             if type(prep_time) is int:
                 valid_prep = False # ending the loop
         except ValueError:
@@ -114,7 +131,7 @@ def add_recipe():
         inst = input('\n Please enter the step here: ')
         cooking_instructions.append(inst)
         print('Step Added succesfuly')
-        inst_done = input('\nPress "Enter" to add another step, write "Done" to confirm your instructions ')
+        inst_done = input('\nPress "Enter" to add another step, write "Done" to confirm your instructions')
         if inst_done == 'Done':
             no_instructions = False #end loop when "Done" is inputted
 
@@ -122,7 +139,7 @@ def add_recipe():
     #No we will create a valid diffuclty case
     valid_difficulty = ['easy','medium','hard']
     while True:
-        difficulty = input('\nWhat is the difficulty of this wonderful dish🫢 [Easy, Medium, Hard]\nChoose one of the options above! ')
+        difficulty = input('\nWhat is the difficulty of this wonderful dish🫢 [Easy, Medium, Hard]\nChoose one of the options above!')
         if difficulty.lower() in valid_difficulty:
             break
         else:
@@ -131,7 +148,7 @@ def add_recipe():
         #Now will create a category
     valid_category = ['breakfast','lunch','dinner', 'dessert']
     while True:
-        category = input('\nWhat do you consider this meal to be?😋 [Breakfast, Lunch, Dinner, Dessert]\nChoose one of the options above! ')
+        category = input('\nWhat do you consider this meal to be?😋 [Breakfast, Lunch, Dinner, Dessert]\nChoose one of the options above!')
         if category.lower() in valid_category:
             break
         else:
@@ -160,17 +177,41 @@ def add_recipe():
 #Waseem
 
 def view_random_recipe():
-    """"Generate A Random Recipe from Available Recipes"""
-    i = 1
-    while i == 1:
-        try:
-            index = rd.randint(0, len(recipes) - 1)
-            print(f"\n=========== Here is a Random Recipe you can try ===============\n\n")
-            print(recipes[index])
-            i = (int(input("Enter '1' to generate another random recipe or '0' to exit: ")))
-        except ValueError:
-            if i > 1 or (i != 1 and i != 0):
-                i = int(input("Please Enter Correct Values (1 or 0): "))
+    """Generate A Random Recipe from Available Recipes"""
+    try:
+        with open('recipes.csv', 'r') as file:
+            recipes = list(csv.DictReader(file))
+            
+        if not recipes:
+            print("No recipes available for random selection.")
+            return
+            
+        i = 1
+        while i == 1:
+            try:
+                index = rd.randint(0, len(recipes) - 1)
+                recipe = recipes[index]
+                
+                print(f"\n=========== Here is a Random Recipe you can try ===============\n")
+                print(f"Recipe Name: {recipe['name']}")
+                print(f"Ingredients: {recipe['ingredients']}")
+                print(f"Preparation Time: {recipe['prep_time']} minutes")
+                print(f"Difficulty: {recipe['difficulty']}")
+                print(f"Category: {recipe['category']}")
+                print(f"Instructions: {recipe['cooking_instructions']}")
+                rating = recipe['rating'] if recipe['rating'] else 'Not rated'
+                print(f"Rating: {rating}")
+                print("=" * 65)
+                
+                i = int(input("Enter '1' to generate another random recipe or '0' to exit: "))
+            except ValueError:
+                print("Please enter a valid number (1 or 0).")
+                i = int(input("Enter '1' to generate another random recipe or '0' to exit: "))
+                
+    except FileNotFoundError:
+        print("No recipes file found. Please add some recipes first!")
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 def rate_recipe():
     """Rate an existing recipe and update the CSV file."""
