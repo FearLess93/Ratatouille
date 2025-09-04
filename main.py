@@ -1,4 +1,8 @@
 import csv
+import uuid
+from datetime import date, datetime, timedelta
+
+import csv
 import random as rd
 import uuid
 import datetime
@@ -31,10 +35,12 @@ def main():
         elif choice == 9:
             scaling_ingredients()
         elif choice == 10:
+            shopping_list()
+        elif choice == 11:
             print("Thank you for using Ratatouille. Goodbye!")
             break
         else:
-            print("Invalid choice. Please enter a number between 1 and 10.")
+            print("Invalid choice. Please enter a number between 1 and 11.")
 
 def display_menu():
     """Display the main menu options."""
@@ -48,8 +54,9 @@ def display_menu():
     print("7. Cook a recipe")
     print("8. View recipes that you didn't cook in a while")
     print("9. Scale ingredients for a recipe")
-    print("10. Exit")
-    return int(input("Enter your choice (1-10): "))
+    print("10. Create a shopping list")
+    print("11. Exit")
+    return int(input("Enter your choice (1-11): "))
 #Zahra
 
 def view_all_recipes():
@@ -271,6 +278,44 @@ def nostalgic_recipes():
     except Exception:
         print('Uh Oh.. WE DEFINITELY DID NOT FORGET WHERE WE HAVE PUT THAT RECIPE!\n*ERROR FETCHING NOSTALGIC RECIPES')
 
+def recipe_category():
+    """View recipes by category"""
+    try:
+        with open('recipes.csv', 'r') as file:
+            reader = csv.DictReader(file)
+            recipes = list(reader)
+            if recipes == []:
+                print('We did not find any recipes, GO ADD SOME!')
+            elif recipes['category'] is None:
+                print('well the categories are here but.. it looks like you did not categorize them!')
+            else: 
+                for recipe in recipes:
+                    if recipe['category'] is not None:
+                        print(f"\n {recipe['name']} - Category: {recipe['category']}")
+    except Exception:
+        print('BREATH... do not worry, we got the recipes.. just gotta get my glasses.. \n*ERROR FETCHING CATEGORIES')
+
+def shopping_list():
+    """Get a shopping list based on the recipe you choose"""
+    try:
+        with open('recipes.csv', 'r') as file:
+            reader = csv.DictReader(file)
+            recipes = list(reader)
+            if recipes == []:
+                print('We did not find any recipes, GO ADD SOME!')
+            else:
+                print('Choose what are we shopping for today:')
+                for recipe in recipes:
+                    print(f"\n {recipe['name']}")
+                choice = input('\nWhich recipe would you like to shop for? (Enter the recipe name): ').strip()
+                # Find the selected recipe and get its ingredients
+                for recipe in recipes:
+                    if recipe['name'].lower() == choice.lower():
+                        shopping_list = recipe['ingredients']
+                        print(f"\nHere is your shopping list for {choice}:\n {shopping_list}")
+    except Exception:
+        print('I can see that we faced an overheating oven.. \n*ERROR FETCHING SHOPPING LIST')               
+
 def view_random_recipe():
     """Generate A Random Recipe from Available Recipes"""
     try:
@@ -345,7 +390,7 @@ def rate_recipe():
                             
                             # Write the updated recipes back to the CSV file
                             with open('recipes.csv', 'w', newline='') as file:
-                                fieldnames = ['recipe_id', 'name', 'ingredients', 'prep_time', 'cooking_instructions', 'difficulty', 'category', 'rating']
+                                fieldnames = ['recipe_id', 'name', 'ingredients', 'prep_time', 'cooking_instructions', 'difficulty', 'category', 'rating', 'last_cooked']
                                 writer = csv.DictWriter(file, fieldnames=fieldnames)
                                 writer.writeheader()
                                 writer.writerows(recipes)
@@ -383,7 +428,9 @@ def view_recipes_sorted_by_rating():
                 recipe["rating"] = 0
         
         # Sort recipes by rating in descending order
-        recipes.sort(key=lambda x: x["rating"], reverse=True)
+        def get_rating(recipe):
+            return recipe["rating"]
+        recipes.sort(key=get_rating, reverse=True)
         
         print("\n=== Recipes Sorted by Rating ===")
         for recipe in recipes:
@@ -431,3 +478,4 @@ def scaling_ingredients():
 
 if __name__ == "__main__":
     main()
+
