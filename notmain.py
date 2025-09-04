@@ -287,7 +287,27 @@ def recipe_category():
                         print(f"\n {recipe['name']} - Category: {recipe['category']}")
     except Exception:
         print('BREATH... do not worry, we got the recipes.. just gotta get my glasses.. \n*ERROR FETCHING CATEGORIES')
-               
+
+def shopping_list():
+    """Get a shopping list based on the recipe you choose"""
+    try:
+        with open('recipes.csv', 'r') as file:
+            reader = csv.DictReader(file)
+            recipes = list(reader)
+            if recipes == []:
+                print('We did not find any recipes, GO ADD SOME!')
+            else:
+                print('Choose what are we shopping for today:')
+                for recipe in recipes:
+                    print(f"\n {recipe['name']}")
+                choice = input('\nWhich recipe would you like to cook? (Enter the recipe name): ').strip()
+                # Find the selected recipe and get its ingredients
+                for recipe in recipes:
+                    if recipe['name'].lower() == choice.lower():
+                        shopping_list = recipe['ingredients']
+                        print(f"\nHere is your shopping list for {choice}:\n {shopping_list}")
+    except Exception:
+        print('I can see that we faced an overheating oven.. \n*ERROR FETCHING SHOPPING LIST')               
 
 def view_random_recipe():
     """Generate A Random Recipe from Available Recipes"""
