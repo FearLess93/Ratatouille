@@ -300,7 +300,7 @@ def shopping_list():
                 print('Choose what are we shopping for today:')
                 for recipe in recipes:
                     print(f"\n {recipe['name']}")
-                choice = input('\nWhich recipe would you like to cook? (Enter the recipe name): ').strip()
+                choice = input('\nWhich recipe would you like to shop for? (Enter the recipe name): ').strip()
                 # Find the selected recipe and get its ingredients
                 for recipe in recipes:
                     if recipe['name'].lower() == choice.lower():
@@ -308,6 +308,36 @@ def shopping_list():
                         print(f"\nHere is your shopping list for {choice}:\n {shopping_list}")
     except Exception:
         print('I can see that we faced an overheating oven.. \n*ERROR FETCHING SHOPPING LIST')               
+
+def serving_multiplier():
+    """basic function: add a multiplier to the ingredients"""
+    try:
+        with open('recipes.csv', 'r') as file:
+            reader = csv.DictReader(file)
+            recipes = list(reader)
+            if recipes == []:
+                print('We did not find any recipes, GO ADD SOME!')
+            else:
+                print('Choose what are we cooking today:')
+                for recipe in recipes:
+                    print(f"\n {recipe['name']}")
+                choice = input('\nWhich recipe would you like to cook? (Enter the recipe name): ').strip()
+                while True:
+                    try:
+                        servings = int(input("Enter number of servings: "))
+                        if servings > 0:
+                            break
+                        else:
+                            print("Please enter a positive number.")
+                    except ValueError:
+                        print("Invalid input. Please enter a number (which is not zero).")
+                # Find the selected recipe and get its ingredients then add the multiplier
+                for recipe in recipes:
+                    if recipe['name'].lower() == choice.lower():
+                        scaling_ingredients = recipe['ingredients']
+                        print(f"\n*THIS IS OUR BETA VERSION PLEASE SUPPORT OUR KICKSTARTER TO HELP US GET A BETTER VERSION OF THIS FEATURE QUICKLY!*\nTo cook {choice}:\n you will need {servings} times the following ingredients:\n {scaling_ingredients}") 
+    except Exception:
+        print('we spilled some oil.. \n*ERROR FETCHING THE SERVING MULTIPLIER')
 
 def view_random_recipe():
     """Generate A Random Recipe from Available Recipes"""
