@@ -3,14 +3,16 @@
 A comprehensive Python-based recipe management application that helps you store, organize, and manage your favorite recipes in a digital format.
 
 ## 📋 Table of Contents
-- [Features](#features)
-- [Installation](#installation)
-- [Usage](#usage)
-- [File Structure](#file-structure)
-- [Functions Overview](#functions-overview)
-- [CSV File Format](#csv-file-format)
-- [Contributing](#contributing)
-- [Author](#author)
+- [Features](#-features)
+- [Installation](#-installation)
+- [Usage](#-usage)
+- [Functions Overview](#-functions-overview)
+- [CSV File Format](#-csv-file-format)
+- [Example Usage](#-example-usage)
+- [Data Persistence](#️-data-persistence)
+- [Error Handling](#-error-handling)
+- [User Experience Features](#-user-experience-features)
+- [Contributing](#-contributing)
 
 ## ✨ Features
 
