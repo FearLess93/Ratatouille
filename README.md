@@ -77,24 +77,6 @@ python main.py
 11. Exit
 ```
 
-### Shopping List Submenu
-```
-🛒 === Shopping List Manager === 🛒
-1. Add a recipe to the shopping list
-2. View shopping list
-3. Exit shopping list
-```
-
-## 📁 File Structure
-
-```
-DSB_projects/
-├── main.py                 # Main application file
-├── recipes.csv            # Recipe database (auto-created)
-├── shopping_list.csv      # Shopping list storage (auto-created)
-└── README.md              # This file
-```
-
 ## 🔧 Functions Overview
 
 ### Core Functions
