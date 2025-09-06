@@ -108,11 +108,6 @@ python main.py
 recipe_id,name,ingredients,prep_time,cooking_instructions,difficulty,category,rating,last_cooked
 ```
 
-### shopping_list.csv
-```csv
-recipe_name,ingredients,date_added
-```
-
 ## 🎯 Example Usage
 
 ### Adding a Recipe
@@ -165,33 +160,5 @@ The application includes comprehensive error handling for:
 
 This project was developed as part of a Data Science Bootcamp. Contributions and improvements are welcome!
 
-### Development Team Contributors
-- Recipe Management Core: Multiple contributors
-- Shopping List Feature: Enhanced functionality
-- Rating System: Integrated rating and sorting
-- User Interface: Menu system and user experience
-
-## 👨‍💻 Author
-
-**Hussain Darwish**
-- Data Science Bootcamp Project
-- University of Bahrain
-
-## 📝 License
-
-This project is part of an educational program and is intended for learning purposes.
-
-## 🚀 Future Enhancements
-
-Potential features for future versions:
-- Recipe import/export functionality
-- Nutritional information tracking
-- Recipe photos and images
-- Meal planning calendar
-- Recipe sharing capabilities
-- Advanced search filters
-- Recipe recommendations based on available ingredients
-
----
 
 *Enjoy cooking with Ratatouille! 🍳👨‍🍳*
