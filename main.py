@@ -1,13 +1,8 @@
 import csv
 import uuid
-from datetime import date, datetime, timedelta
-
-import csv
+from datetime import datetime
 import random as rd
-import uuid
-import datetime
 
-# Hussain Darwish
 
 def main():
     """Main application function."""
@@ -57,7 +52,6 @@ def display_menu():
     print("10. Create a shopping list")
     print("11. Exit")
     return int(input("Enter your choice (1-11): "))
-#Zahra
 
 def view_all_recipes():
     """View all recipes in the database from the CSV file."""
@@ -86,9 +80,6 @@ def view_all_recipes():
     except Exception as e:
         print(f"An error occurred while reading recipes: {e}")
 
-
-#Maryam
-
 def recipes_by_ingredients():
     ingredients = input('Which ingredient would you like to search for?  ').lower()
     found = False 
@@ -108,7 +99,7 @@ def recipes_by_ingredients():
     except:
         print("No ingredient found! Try again.")
         return
-#Sayed Hussain
+
 def add_recipe():
     """use this function to add a new recipe to your recipes csv"""
 
@@ -296,25 +287,134 @@ def recipe_category():
         print('BREATH... do not worry, we got the recipes.. just gotta get my glasses.. \n*ERROR FETCHING CATEGORIES')
 
 def shopping_list():
-    """Get a shopping list based on the recipe you choose"""
-    try:
-        with open('recipes.csv', 'r') as file:
-            reader = csv.DictReader(file)
-            recipes = list(reader)
-            if recipes == []:
-                print('We did not find any recipes, GO ADD SOME!')
+    """Shopping list management with options: add recipe to list, view list, and exit"""
+    while True:
+        print("\n🛒 === Shopping List Manager === 🛒")
+        print("1. Add a recipe to the shopping list")
+        print("2. View shopping list")
+        print("3. Exit shopping list")
+        
+        try:
+            choice = int(input("Choose an option (1-3): "))
+            
+            if choice == 1:
+                add_recipe_to_shopping_list()
+            elif choice == 2:
+                view_shopping_list()
+            elif choice == 3:
+                print("Returning to main menu...")
+                break
             else:
-                print('Choose what are we shopping for today:')
-                for recipe in recipes:
-                    print(f"\n {recipe['name']}")
-                choice = input('\nWhich recipe would you like to shop for? (Enter the recipe name): ').strip()
-                # Find the selected recipe and get its ingredients
-                for recipe in recipes:
-                    if recipe['name'].lower() == choice.lower():
-                        shopping_list = recipe['ingredients']
-                        print(f"\nHere is your shopping list for {choice}:\n {shopping_list}")
-    except Exception:
-        print('I can see that we faced an overheating oven.. \n*ERROR FETCHING SHOPPING LIST')               
+                print("Invalid choice. Please enter 1, 2, or 3.")
+                
+        except ValueError:
+            print("Please enter a valid number (1-3).")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
+def add_recipe_to_shopping_list():
+    """Add a recipe's ingredients to the shopping list"""
+    try:
+        # Read existing recipes
+        with open('recipes.csv', 'r') as file:
+            recipes = list(csv.DictReader(file))
+            
+        if not recipes:
+            print('No recipes found. Please add some recipes first!')
+            return
+            
+        # Display available recipes
+        print('\n📋 Available recipes to add to shopping list:')
+        for i, recipe in enumerate(recipes, 1):
+            print(f"{i}. {recipe['name']}")
+        
+        choice = input('\nWhich recipe would you like to add to your shopping list? (Enter the recipe name): ').strip()
+        
+        # Find the selected recipe
+        recipe_found = False
+        for recipe in recipes:
+            if recipe['name'].lower() == choice.lower():
+                recipe_found = True
+                
+                # Prepare shopping list entry
+                shopping_entry = {
+                    'recipe_name': recipe['name'],
+                    'ingredients': recipe['ingredients'],
+                    'date_added': datetime.date.today().strftime("%Y-%m-%d")
+                }
+                
+                # Read existing shopping list or create new one
+                shopping_list_items = []
+                try:
+                    with open('shopping_list.csv', 'r') as file:
+                        shopping_list_items = list(csv.DictReader(file))
+                except FileNotFoundError:
+                    # Create new shopping list file with headers
+                    with open('shopping_list.csv', 'w', newline='') as file:
+                        writer = csv.writer(file)
+                        writer.writerow(['recipe_name', 'ingredients', 'date_added'])
+                
+                # Check if recipe is already in shopping list
+                already_exists = False
+                for item in shopping_list_items:
+                    if item['recipe_name'].lower() == choice.lower():
+                        already_exists = True
+                        break
+                
+                if already_exists:
+                    print(f"'{recipe['name']}' is already in your shopping list!")
+                else:
+                    # Add to shopping list
+                    with open('shopping_list.csv', 'a', newline='') as file:
+                        fieldnames = ['recipe_name', 'ingredients', 'date_added']
+                        writer = csv.DictWriter(file, fieldnames=fieldnames)
+                        writer.writerow(shopping_entry)
+                    
+                    print(f"\n✅ Added '{recipe['name']}' to your shopping list!")
+                    print(f"Ingredients needed: {recipe['ingredients']}")
+                break
+        
+        if not recipe_found:
+            print(f"Recipe '{choice}' not found. Please check the name and try again.")
+            
+    except FileNotFoundError:
+        print("No recipes file found. Please add some recipes first!")
+    except Exception as e:
+        print(f'An error occurred while adding to shopping list: {e}')
+
+def view_shopping_list():
+    """View all items in the shopping list"""
+    try:
+        with open('shopping_list.csv', 'r') as file:
+            shopping_items = list(csv.DictReader(file))
+            
+        if not shopping_items:
+            print("\n🛒 Your shopping list is empty!")
+            print("Use option 1 to add recipes to your shopping list.")
+            return
+            
+        print("\n🛒 === Your Shopping List === 🛒")
+        print("-" * 50)
+        
+        for i, item in enumerate(shopping_items, 1):
+            print(f"{i}. Recipe: {item['recipe_name']}")
+            print(f"   Ingredients: {item['ingredients']}")
+            print(f"   Added on: {item['date_added']}")
+            print("-" * 50)
+        
+        # Option to clear shopping list
+        clear_choice = input("\nWould you like to clear your shopping list? (y/n): ").lower().strip()
+        if clear_choice in ['y', 'yes']:
+            with open('shopping_list.csv', 'w', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerow(['recipe_name', 'ingredients', 'date_added'])
+            print("🗑️ Shopping list cleared!")
+            
+    except FileNotFoundError:
+        print("\n🛒 Your shopping list is empty!")
+        print("Use option 1 to add recipes to your shopping list.")
+    except Exception as e:
+        print(f'An error occurred while viewing shopping list: {e}')               
 
 def view_random_recipe():
     """Generate A Random Recipe from Available Recipes"""
