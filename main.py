@@ -95,9 +95,8 @@ def recipes_by_ingredients():
                     print(f"Instructions: {row['cooking_instructions']}\n")
                     print(f"Preperation Time: {row['prep_time']}")
                     found = True
-                if not found:
-                    print(f" No recipes found with '{ingredients}' ")
-                    break 
+            if not found:
+                print(f" No recipes found with '{ingredients}' ")
     except:
         print("No ingredient found! Try again.")
         return
