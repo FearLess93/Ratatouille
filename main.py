@@ -51,7 +51,10 @@ def display_menu():
     print("9. Scale ingredients for a recipe")
     print("10. Create a shopping list")
     print("11. Exit")
-    return int(input("Enter your choice (1-11): "))
+    try:
+        return int(input("Enter your choice (1-11): "))
+    except ValueError:
+        return None
 
 def view_all_recipes():
     """View all recipes in the database from the CSV file."""
