@@ -1,6 +1,6 @@
 import csv
 import uuid
-from datetime import datetime
+import datetime
 import random as rd
 
 
@@ -561,7 +561,7 @@ def scaling_ingredients():
         if recipe['name'].lower() == choice.lower():
             recipe_found = True
             # Display the recipe details
-            print(f"\n:fried_egg:Recipe: {recipe['name']} :fried_egg:")
+            print(f"\nRecipe: {recipe['name']}")
             print(f"Ingredients: {recipe['ingredients']}")
             print(f"Instructions: {recipe['cooking_instructions']}")
             print(f"Prep time: {recipe['prep_time']} minutes")
