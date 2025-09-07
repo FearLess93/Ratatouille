@@ -83,6 +83,7 @@ def view_all_recipes():
         print(f"An error occurred while reading recipes: {e}")
 
 def recipes_by_ingredients():
+    """Search for recipes by ingredient"""
     ingredients = input('Which ingredient would you like to search for?  ').lower()
     found = False 
     try:
@@ -530,6 +531,7 @@ def view_recipes_sorted_by_rating():
         
         # Sort recipes by rating in descending order
         def get_rating(recipe):
+            """Helper function to get the rating for sorting."""
             return recipe["rating"]
         recipes.sort(key=get_rating, reverse=True)
         
@@ -542,6 +544,7 @@ def view_recipes_sorted_by_rating():
         print("No recipes file found. Please add some recipes first!")
     except Exception as e:
         print(f"An error occurred: {e}")
+
 def scaling_ingredients():
     """" Scaling the Quantity of ingredients based on Number of Servings"""
     try:
@@ -595,6 +598,6 @@ def scaling_ingredients():
         print("Please enter a valid number for servings.")
     except Exception as e:
         print(f"An error occurred: {e}")
+
 if __name__ == "__main__":
     main()
-
