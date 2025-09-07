@@ -545,39 +545,57 @@ def view_recipes_sorted_by_rating():
         print(f"An error occurred: {e}")
 def scaling_ingredients():
     """" Scaling the Quantity of ingredients based on Number of Servings"""
-     # Read existing recipes
-    with open('recipes.csv', 'r') as file:
-        reader = csv.DictReader(file)
-        recipes = list(reader)
+    try:
+        # Read existing recipes
+        with open('recipes.csv', 'r') as file:
+            reader = csv.DictReader(file)
+            recipes = list(reader)
+            
         if not recipes:
             print("No recipes found. Please add some recipes first!")
             return
+            
         # Display available recipes
-        print("\nAvailable recipes to cook:")
-    for i, recipe in enumerate(recipes, 1):
-            print(f"{i}. {recipe['name']} ")
-    choice = input('\nWhich recipe would you like to cook? (Enter the recipe name): ').strip()
+        print("\nAvailable recipes to scale:")
+        for i, recipe in enumerate(recipes, 1):
+            print(f"{i}. {recipe['name']}")
+            
+        choice = input('\nWhich recipe would you like to scale? (Enter the recipe name): ')
+        
         # Find the recipe
-    recipe_found = False
-    for recipe in recipes:
-        if recipe['name'].lower() == choice.lower():
-            recipe_found = True
-            # Display the recipe details
-            print(f"\nRecipe: {recipe['name']}")
-            print(f"Ingredients: {recipe['ingredients']}")
-            print(f"Instructions: {recipe['cooking_instructions']}")
-            print(f"Prep time: {recipe['prep_time']} minutes")
-            print(f"Difficulty: {recipe['difficulty']}")
-            print(f"Category: {recipe['category']}")
-            break
+        recipe_found = False
+        selected_recipe = None
+        
+        for recipe in recipes:
+            if recipe['name'].lower() == choice.lower():
+                recipe_found = True
+                selected_recipe = recipe
+                break
+        
         if not recipe_found:
             print('Recipe not found. Please check the name and try again.')
             return
-    servings = int(input("Enter number of servings: "))
-    print("===============The Quantity of ingredients you require for you================")
-    print(f"For {servings} of {recipe['name']} \n you will need: {servings} x {recipe['ingredients']}")
-    print("===================================================================")
-
+            
+        # Display the recipe details
+        print(f"\nRecipe: {selected_recipe['name']}")
+        print(f"Ingredients: {selected_recipe['ingredients']}")
+        print(f"Instructions: {selected_recipe['cooking_instructions']}")
+        print(f"Prep time: {selected_recipe['prep_time']} minutes")
+        print(f"Difficulty: {selected_recipe['difficulty']}")
+        print(f"Category: {selected_recipe['category']}")
+        
+        servings = int(input("\nEnter number of servings: "))
+        print("\n===============The Quantity of ingredients you require================")
+        print(f"For {servings} servings of {selected_recipe['name']}")
+        print(f"You will need: {servings} x {selected_recipe['ingredients']}")
+        print("===================================================================")
+        
+    except FileNotFoundError:
+        print("No recipes file found. Please add some recipes first!")
+    except ValueError:
+        print("Please enter a valid number for servings.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
 if __name__ == "__main__":
     main()
 
